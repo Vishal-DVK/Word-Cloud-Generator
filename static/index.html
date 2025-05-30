@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Word Cloud Generator</title>
+    <style>
+        body {
+            background-color: #1e1e2f;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        textarea {
+            width: 100%;
+            max-width: 600px;
+            height: 180px;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        img {
+            margin-top: 20px;
+            max-width: 100%;
+            border-radius: 8px;
+            border: 2px solid #444;
+        }
+
+        a#download-link {
+            margin-top: 10px;
+            display: none;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        a#download-link:hover {
+            background-color: #218838;
+        }
+
+        p#footer {
+            display: none;
+            margin-top: 40px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #f0f8ff;
+            font-family: Arial, sans-serif;
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+    <h1>⚡ Word Cloud Generator</h1>
+    <textarea id="text-input" placeholder="Type or paste your text here..."></textarea><br />
+    <button onclick="generateWordCloud()">Generate Word Cloud</button>
+    <img id="result" style="display:none;" alt="Word Cloud" />
+    <a id="download-link" download="wordcloud.png">⬇️ Download Word Cloud</a>
+
+    <p id="footer">Created by Vishal</p>
+
+    <script>
+        async function generateWordCloud() {
+            const text = document.getElementById("text-input").value;
+            if (!text.trim()) {
+                alert("Please enter some text.");
+                return;
+            }
+
+            const response = await fetch("/generate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+
+                const img = document.getElementById("result");
+                img.src = url;
+                img.style.display = "block";
+
+                const downloadLink = document.getElementById("download-link");
+                downloadLink.href = url;
+                downloadLink.style.display = "inline-block";
+
+                // Show footer after successful generation
+                document.getElementById("footer").style.display = "block";
+            } else {
+                alert("Failed to generate word cloud.");
+                console.error(await response.text());
+            }
+        }
+    </script>
+</body>
+</html>

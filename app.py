@@ -2,6 +2,7 @@ from flask import Flask, request, send_file, send_from_directory
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import io
+import os
 
 app = Flask(__name__, static_folder='static')
 
